@@ -137,17 +137,26 @@ class TestLineSweep(unittest.TestCase):
         return
         events = [(p[0], True) for p in points]
         events += [(p[1], False) for p in points]
-        print()
-        print(points)
-        print(events)
-        events.sort()
-        print(events)
         events.sort(key=itemgetter(0,1))
         print(events)
+
+
+    def test_num_overlapping(self):
+        pointsInTime = [[10,13],[0,3],[1,4],[2,5],[6,7],[7,9],[8,10],[9,11]]
+        pointsInTime = [[6,7],[7,9],[8,10],[9,11],[10,13],[11,12]]
+        results = TimeScheduler.maxNumberOfOverlappingEvents(pointsInTime)
+        self.assertEqual(results,2)
 
     def test_skyline_foo(self):
         points = [[2, 9, 10],[3, 7, 15], [5, 12,12], [11,14,100], [15, 20, 10], [19, 24, 8]]
         e = [(2, 10), (3, 15), (7, 12), (11, 100), (14, 0), (15, 10), (20, 8), (24, 0)]
         print()
         r = Skyline.skylineFromPoints(points)
+        self.assertEqual(r,e)
+
+    def test_skyline_zed(self):
+        points = [[2, 9, 10],[3, 7, 15], [5, 12,12], [11,14,100], [15, 20, 10], [19, 24, 8]]
+        e = [(2, 10), (3, 15), (7, 12), (11, 100), (14, 0), (15, 10), (20, 8), (24, 0)]
+        print()
+        r = Skyline.pointsToSkyline(points)
         self.assertEqual(r,e)

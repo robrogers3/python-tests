@@ -1,8 +1,10 @@
 import queue
 import heapq
+import operator
+import random
+from itertools import chain
 from queues import QueueWithMax
 from heaps import MaxHeap, MinHeap
-
 
 def calculate_max_of_sliding_windows(l, n):
     q = QueueWithMax()
@@ -20,12 +22,11 @@ def calculate_max_of_sliding_windows(l, n):
 
     return r
 
-
 def calculate_the_max_price_of_a_N_day_period(prices,n):
     q = queue.PriorityQueue()
     def add_price(price):
         while not q.empty() and q.queue[0][1] < (price[1] - n):
-            item = q.get(False)
+            q.get(False)
 
         price[0] = -price[0]
         q.put(price)
@@ -406,32 +407,269 @@ def spiral_collect(a):
 
     return res
 
+def rotate_ninty_clockwise(a):
+    #it's a sq,
+    N = len(a[0])
+    i = 0
+    m = [
+        [1,2,3],
+        [4,5,6],
+        [7,8,9]
+        ]
+    for i in range(N // 2):
+        for j in range(i, N - i - 1):
+            # temp= a[i][j]
+            # a[i][j] = a[N - 1 - j][i]
+            # a[N - 1 - j][i] = a[N - 1 - i][N - 1 - j]
+            # a[N - 1 - i][N - 1 - j] = a[j][N - 1 - i]
+            # a[j][N - 1 - i] = temp
+            # continue
+            tl = a[i][j]
+            tr = a[j][N - 1 - i]
+            bl = a[N - 1 - j][i]
+            br = a[N - 1 - i][N - 1 - j]
+
+            # print(i,j)
+            # print('top left',tl,(i,j))
+            # print('top right',tr, (j, N - 1 -i))
+            # print('bttow right', br, (N - 1 - i, N - 1 - j))
+            # print('bottow left', bl, (N - 1 - j, i))
+
+            # top left set to bottom left
+            a[i][j] = bl
+            # top right set to top left
+            a[j][N - 1 - i] = tl
+
+            # bottom left set to bottom right
+            a[N-1-j][i] = br
+            # bottom right set to top right
+            a[N - 1 -i][N - 1 -j] = tr
+
+    return a
 def rotate_ninty(arr):
     def rotate(a,start, end):
         curr = 0
-        print('rotate',start,end)
         while start + curr < end:
+            #print('rotate',curr, start,curr + start, end)
+            # save top left e.g. a[0][0] -> int(1)
             tmp = a[start][start+curr]
+            # set top left to val of bottom left
+            # e.g. a[0][0+0] = a[2 - 0][0]
             a[start][start + curr] = a[end - curr][start]
+            # set bottom left to val of bottom right
+            # e.g. a[2 - 0][0] = a[2][2 - 0]
             a[end - curr][start] = a[end][end - curr]
+            # set bottom right to val of top right
+            # e.g. a[2][2 - 0] = a[0 + 0][2]
             a[end][end - curr] = a[start+curr][end]
+            # set top right, e.g. a[0][2] to tmp i.e. top left
+            # e.g. a[0+0][2] = tmp = a[start][start + curr]
             a[start+curr][end] = tmp
             curr += 1
 
-        # curr = 0
-        # while start + curr < end:
-        #     t = a[start][start+curr]
-        #     a[start][start+curr] = a[end-curr][start]
-        #     a[end-curr][start]   = a[end][end-curr]
-        #     a[end][end-curr]     = a[start+curr][end]
-        #     a[start+curr][end]   = t
-        #     curr += 1
-
     layer = 0
-    print(len(arr))
     while layer < (len(arr) // 2):
         rotate(arr,layer, len(arr) - 1 - layer)
-        print('while',layer, len(arr) //2)
         layer += 1
 
     return arr
+
+def swap(a, i,j):
+    a[j],a[i] = a[i],a[j]
+
+def reverse_array_els(a, start, end):
+    while start < end:
+        swap(a,start,end)
+        start += 1
+        end -= 1
+def reverse_columns(arr):
+    C = len(arr)
+    for i in range(C):
+        j = 0
+        k = C-1
+        while j < k:
+            t = arr[j][i]
+            arr[j][i],arr[k][i] = arr[k][i],arr[j][i]
+            #arr[k][i] = t
+            j += 1
+            k -= 1
+
+    return arr
+
+def reverse_array(a):
+    reverse_array_els(a, 0, len(a) -1)
+
+
+def transpose(a):
+    return [[a[j][i] for j in range(len(a))] for i in range(len(a[0]))]
+
+def find_missing_num(a, n):
+    expected =  n*(n+1)/2
+    return expected - sum(a)
+
+def find_single_number(a):
+    result = 0
+    for el in a:
+        result ^= el
+    return result
+
+def partion(a, start, end, pivot, pred):
+    swap(a,start,pivot)
+    less = start
+    for i in range(start+1,end+1):
+        if pred(a[i], a[start]):
+            less += 1
+            swap(a,i,less)
+
+    swap(a, start, less)
+    return less
+
+def select_for_target_index(a, start, end, targetIdx, pred):
+    pivot = random.randint(start, end)
+    result = partion(a, start, end, pivot, pred)
+    if result == targetIdx:
+        return result
+    if result > targetIdx:
+        return select_for_target_index(a, start, result -1, targetIdx, pred)
+
+    #result < targetIdx
+    return select_for_target_index(a, result +1, end, targetIdx, pred)
+
+def select_kth_largest(a,k):
+    pred = operator.ge
+    res = select_for_target_index(a, 0, len(a) - 1, k - 1, pred)
+    return a[res]
+
+def select_kth_smallest(a, k):
+    pred = operator.le
+    res = select_for_target_index(a, 0, len(a) - 1, k - 1, pred)
+    return a[res]
+
+def merge_sub_arrays(a, start, mid, end):
+    res = [None] * (end - start + 1)
+    i = start
+    j = mid + 1
+    resPos = 0
+
+    while i <= mid and j <= end:
+        if a[i] < a[j]:
+            res[resPos] = a[i]
+            i += 1
+        else:
+            res[resPos] = a[j]
+            j += 1
+
+        resPos += 1
+
+    while i <= mid:
+        res[resPos] = a[i]
+        resPos += 1
+        i += 1
+
+    while j <= end:
+        res[resPos] = a[j]
+        resPos += 1
+        j += 1
+
+
+    for k in range(len(res)):
+        a[start+k] = res[k]
+
+def merge_sort(a):
+    def msort(a, start, end):
+        if start >= end:
+            return
+
+        mid = start + ((end - start) >> 1)
+
+        msort(a, start, mid)
+        msort(a, mid + 1, end)
+        merge_sub_arrays(a, start,mid,end)
+
+    if not len(a): return a
+    msort(a, 0, len(a) - 1)
+    return a
+
+def dutch_national_flag(a, start, end, pivotIdx):
+    pivot = a[pivotIdx]
+    low = start - 1
+    mid = start - 1
+    high = end + 1
+    while mid + 1 < high:
+        if a[mid+1] > pivot:
+            swap(a, high-1, mid+1)
+            high -= 1
+        elif a[mid+1] == pivot:
+            mid +=1
+        else:
+            swap(a,mid+1,low+1)
+            mid += 1
+            low += 1
+
+    return [low,high]
+
+def quick_sort(a):
+    def qsort(a, start, end):
+        if start < 0 or end >= len(a) or start >= end:
+            return
+
+        pivotIdx = random.randint(start,end)
+        points = dutch_national_flag(a, start,end,pivotIdx)
+        qsort(a, start, points[0])
+        qsort(a,points[1], end)
+
+
+    if not a or not len(a):
+        return a
+
+    qsort(a,0,len(a) - 1)
+    return a
+
+def bucket_sort(a):
+    buckets = [None] * len(a)
+    for el in a:
+        buckets[el] = el
+
+    return buckets
+
+def sort_lists(m):
+    result = []
+    q = queue.PriorityQueue()
+    for v in chain(*m):
+        q.put(v)
+
+    while q.qsize():
+        result.append(q.get())
+
+    return result
+
+def length(arr):
+    def l(i, a, p):
+        if i < len(a):
+            p += 1
+            i +=1
+            return l(i,a,p)
+        else:
+            return p
+
+    p = l(0,arr, 0)
+
+    return p
+
+def dnf(a, idx):
+    pivot = a[idx]
+    low = -1
+    mid = -1
+    high = len(a)
+    while mid + 1 < high:
+        if a[mid+1] > pivot:
+            swap(a, high -1, mid + 1)
+            high -= 1
+        elif a[mid+1] == pivot:
+            mid +=1
+        else:
+            swap(a, mid +1, low+1)
+            mid += 1
+            low += 1
+
+    return a

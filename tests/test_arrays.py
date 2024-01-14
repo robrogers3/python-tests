@@ -162,12 +162,142 @@ class TestArrayStuff(unittest.TestCase):
         a.append([1,2,3])
         a.append([4,5,6])
         a.append([7,8,9])
-        e = [[7,4,1],[8,5,2],[9,6,3]]
+        e = [[7,4,1],
+             [8,5,2],
+             [9,6,3]]
         r = arraystuff.rotate_ninty(a)
         self.assertEqual(e,r)
         m = [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]]
         r = arraystuff.rotate_ninty(m)
-        print(r)
+
+
+    def test_transpose(self):
+        a = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ]
+        r = arraystuff.transpose(a)
+
+    def test_rotate_90_clockwise(self):
+        a = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9],
+            ]
+
+        e = [
+            [7,4,1],
+            [8,5,2],
+            [9,6,3]
+            ]
+        r = arraystuff.rotate_ninty_clockwise(a)
+        #self.assertEqual(a,e)
+
+    def test_transpose(self):
+        a = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ]
+        r = arraystuff.transpose(a)
+        e = [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+        self.assertEqual(e,r)
+
+    def test_rotate_minus_90(self):
+        a = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ]
+        r = arraystuff.transpose(a)
+        r1 = arraystuff.reverse_columns(r)
+        e = [[7,4,1],
+             [8,5,2],
+             [9,6,3]]
+
+    def test_reverse_columns(self):
+        a = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ]
+        r = arraystuff.reverse_columns(a)
+
+    def test_reverse_array(self):
+        a = [1,2,3]
+        r = arraystuff.reverse_array(a)
+        self.assertEqual([3,2,1],a)
+
+    def test_find_missing_num(self):
+        a = [1,2,3,5]
+        self.assertEqual(4,arraystuff.find_missing_num(a,5))
+        self.assertEqual(2,arraystuff.find_missing_num([1,3,4,5],5))
+
+    def test_find_single_number(self):
+        a = [11,12,11,12,15,15,7]
+        self.assertEqual(7, arraystuff.find_single_number(a))
+
+    def test_k_smallest(self):
+        l= [5,7,4,6,5,3,3]
+        r = arraystuff.select_kth_smallest(l, 3)
+        self.assertEqual(4,r)
+        l= [3,7,4,6,5,3,3]
+        r = arraystuff.select_kth_smallest(l, 4)
+        self.assertEqual(4,r)
+
+    def test_kth_largest(self):
+        l = [2,1,4,3,5,0]
+        r = arraystuff.select_kth_largest(l, 2)
+        self.assertEqual(4,r)
+        l = [7,2,1,4,3,5,0]
+        r = arraystuff.select_kth_largest(l, 3)
+        self.assertEqual(4,r)
+
+    def test_merge_sort(self):
+        l = [2,5,1,10,4,3]
+        e = [1,2,3,4,5,10]
+        l = arraystuff.merge_sort(l)
+        self.assertEqual(e,l)
+
+    def test_merge_sort(self):
+        l = [2,5,1,10,4,3]
+        e = [1,2,3,4,5,10]
+        r = arraystuff.quick_sort(l)
+        self.assertEqual(e,r)
+        s = """ccc
+        aaa
+        ttt""";
+
+        lines = [l.strip() for l in s.split("\n") if l]
+        r = arraystuff.quick_sort(lines)
+        self.assertEqual(['aaa', 'ccc', 'ttt'], r)
+
+
+    def test_bucket_sort(self):
+        l = [2,5,0,1,6,4,3]
+        e = [0,1,2,3,4,5,6]
+        r = arraystuff.bucket_sort(l)
+        self.assertEqual(r,e)
+
+    def test_sort_lists(self):
+        m = [ [1, 3, 5, 7],
+              [2, 4, 6, 8],
+              [0, 9, 10, 11]]
+        e = list(map(int, "0 1 2 3 4 5 6 7 8 9 10 11".split(" ")))
+        r = arraystuff.sort_lists(m)
+        self.assertEqual(r,e)
+
+    def test_length(self):
+        l = [2,5,0,1,6,4,3]
+        r = arraystuff.length(l)
+        self.assertEqual(r,len(l))
+
+    def test_dnf(self):
+        a = [1,2,3,4,4,1,2,3]
+        i = 2
+        e = [1,2,2,1,3,3,4,4]
+        self.assertEqual(arraystuff.dnf(a,i), e)
 
 if __name__ == '__main__':
     unittest.main()

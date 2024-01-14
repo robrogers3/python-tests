@@ -88,14 +88,22 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(e,r)
         m = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
         r = rotate_90(m)
-        print(r)
+        e = [[9, 5, 1, 4], [10, 6, 2, 8], [11, 7, 3, 12]]
+        self.assertEqual(r,e)
 
     def test_it_can_add_two_big_nums(self):
+        a = []
+        b = [4,8]
+        r = add_two_big_nums(a,b)
+        self.assertEqual(r, b)
+        a = [4,8]
+        b = [1,3,3]
+        r = add_two_big_nums(a,b)
+        self.assertEqual([1,8,1],r)
         a =   [6,4,8]
         b =   [1,3,3]
         e = [7,8,1]
         r = add_two_big_nums(a,b)
-
         self.assertEqual(e,r)
         a = [9,9]
         b = [9,2]
@@ -104,19 +112,16 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(e,r)
 
     def test_it_can_mul_two_big_nums(self):
-          a = [1,6,4,3]
-          b = [1,3,1]
-          e = [2,1,5,2,3,3]
-          a = [1,1]
-          b = [3]
-          e = [3,3]
-          r = mul_two_big_nums(a,b)
-          self.assertEqual(e,r)
-          a = [1,6,4,3]
-          b = [1,3,1]
-          e = [2,1,5,2,3,3]
-          r = mul_two_big_nums(a,b)
-          self.assertEqual(e,r)
+        a = [1,1]
+        b = [3]
+        e = [3,3]
+        r = mul_two_big_nums(a,b)
+        self.assertEqual(e,r)
+        a = [1,6,4,3]
+        b = [1,3,1]
+        e = [2,1,5,2,3,3]
+        r = mul_two_big_nums(a,b)
+        self.assertEqual(e,r)
 
     def test_it_can_hash_a_string(self):
         s = 'aaa'
@@ -161,8 +166,6 @@ class TestHelpers(unittest.TestCase):
 
 
     def test_word_ladder_two(self):
-        return
-        #word_list = ['hot', 'dot','dog', 'lot','log', 'cog']
         word_list = ["hot","dot","dog","lot","log","cog"]
         start = 'hit'
         end = 'cog'
@@ -207,10 +210,21 @@ class TestHelpers(unittest.TestCase):
         r = reverse_bit(0b100010)
         self.assertEqual(r,0b010001)
 
+    def test_count_bits(self):
+        r = count_bits(6)
+        self.assertEqual(r,2)
+        r = count_bits(22)
+        self.assertEqual(3,r)
+
+    def test_complement_of_num(self):
+        n = '0b00010001'
+        r = complement_of_num(int(n, 2))
+        self.assertEqual(r, int('0b01110',2))
+
     def test_primes_sieve(self):
         r = primes_sieve(10)
         self.assertEqual(r, [2,3,5,7])
-        return
+
         r = primes_sieve(101)
         e = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,101]
         self.assertEqual(r,e)
@@ -253,6 +267,7 @@ class TestHelpers(unittest.TestCase):
 
     def test_k_smallest(self):
         l = [5,7,4,6,5,3,3]
+        l= [5,7,4,6,5,3,3]
         r = select_kth_smallest(l, 3)
         self.assertEqual(4,r)
 
@@ -263,6 +278,38 @@ class TestHelpers(unittest.TestCase):
         l = [7,2,1,4,3,5,0]
         r = select_kth_largest(l, 3)
         self.assertEqual(4,r)
+
+    def test_it_has_sums_for_k(self):
+        l = [2,3,5,6,2,1]
+        e = [10,14,13,9]
+        k = 3
+        r = sliding_window_sum(l,3)
+        self.assertEqual(r,e)
+
+    def test_it_calculate_the_max_price_of_a_N_day_period(self):
+        l = [[11,1],[19,2],[14,3],[13,4],[4,5],[5,7]]
+        e = [13,4]
+        r = calculate_the_max_price_of_a_N_day_period(l, 3)
+        self.assertEqual(e, r)
+
+    def test_it_sums_two_nums_as_strings(self):
+        s1 = "3.14"
+        s2 = "0.9"
+        e = "4.04"
+        r = add_two_big_nums_as_string(s1,s2)
+        self.assertEqual(e,r)
+
+        s1 = "3.14"
+        s2 = "1.09"
+        e = "4.23"
+        r = add_two_big_nums_as_string(s1,s2)
+        self.assertEqual(e,r)
+
+
+    def test_zipper(self):
+        return
+        print('testZipper')
+        zipper(2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,9 +1,9 @@
-from structures import MinHeap, MaxHeap
+from . import MinHeap, MaxHeap
 
 class RunningMedian:
     def __init__(self):
-        self.high = MinHeap(6)
-        self.low = MaxHeap(6)
+        self.high = MinHeap(60)
+        self.low = MaxHeap(60)
 
     def median(self):
         if self.low.empty() and self.high.empty():
@@ -20,10 +20,10 @@ class RunningMedian:
             self.high.push(num)
             return self
 
+        #need to incr high as high should be larger than low
         if self.high.length() == self.low.length():
-            #need to incr high
+            #retain len high >= low
             if num < self.low.peek():
-                #retain len high >= low
                 self.high.push(self.low.pop())
                 self.low.push(num)
             else:

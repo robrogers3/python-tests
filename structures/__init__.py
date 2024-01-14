@@ -9,3 +9,5 @@ from structures.RunningMedian import RunningMedian
 from structures.Skyline import Skyline
 from structures.TimePoint import TimePoint
 from structures.TimeScheduler import TimeScheduler
+from structures.Trees import BinaryTree, TreeNode
+from structures.LinkedList import LinkedList, Pointer

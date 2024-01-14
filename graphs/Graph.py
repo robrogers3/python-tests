@@ -1,10 +1,10 @@
 import itertools
 import queue
 from graphs.Node import Node
-
+from collections import defaultdict
 class Graph:
     def __init__(self, nodes):
-        self.nodes = nodes
+        self.nodes = nodes[:]
 
     def addNode(self, node):
         self.nodes.append(node)
@@ -50,13 +50,31 @@ class Graph:
                     node.setLongestPath(current.getLongestPath() + 1)
         return diameter
 
+    def groupConnectedNodes(self, using):
+        for node in self.nodes:
+            if node.getState() == 'unvisited':
+                self.dfsGroup(node, using)
+                using += 1
+
+        groupings = defaultdict(list)
+        for node in self.nodes:
+            groupings[node.getGrouping()].append(node)
+
+        return groupings
+
+    def dfsGroup(self, node, using):
+        node.setState('visiting')
+        node.setGrouping(using)
+        for neighbor in node.getNeighbors():
+            if neighbor.getState() == 'unvisited':
+                self.dfsGroup(neighbor, using)
+
+        node.setState('visited')
     def dfs_visit(self, node, stack):
         node.setState('visiting')
-
         for neighbor in node.getNeighbors():
             if neighbor.getState() == 'unvisited':
                 self.dfs_visit(neighbor, stack)
-
 
         node.setState('visited')
         stack.append(node)
@@ -66,14 +84,14 @@ class Graph:
         results = [-1] * len(sorted_stack)
         current = sorted_stack[0]
         results[0] = 1
-        i = 1
-        while i < len(results):
+        for i in range(1,len(results)):
             results[i] = max(results[i], results[i-1] + 1)
             for node in current.getNeighbors():
                 results[i] = max(results[i], results[i - 1] + 1)
 
             current = sorted_stack[i]
             i += 1
+
         return results
 
     def clone(self):
@@ -136,7 +154,7 @@ class Graph:
         q = queue.Queue()
         q.put(start)
         start.setState('visiting')
-        while not q.empty():
+        while q:
             curr = q.get()
             if func(curr):
                 curr.setState('visited')
@@ -170,3 +188,67 @@ class Graph:
 
         node.setState('visited')
         return False
+
+    def dfsHasCycle(self,node,func):
+        node.setState('visiting')
+        for neighbor in node.getNeighbors():
+            if neighbor.getState() == 'unvisited' and self.dfsHasCycle(neighbor,func):
+                return True
+            elif neighbor.getState() == 'visiting':
+                return True
+
+        node.setState('visited')
+        return False
+
+    def hasCycle(self):
+        def func(node):
+            return node.getState() == 'visiting'
+        for node in self.nodes:
+            if node.getState() == 'unvisited' and self.dfsHasCycle(node, func):
+                return True
+        return False
+
+    def bipartite(self):
+        group1 = []
+        group2 = []
+        for node in self.nodes:
+            node.setState('unvisited')
+            node.setLevel(-1)
+
+        for node in self.nodes:
+            if node.getState() == 'unvisited':
+                groups = self.getBipartiteGroups(node);
+                if not groups:
+                    return []
+
+                group1.extend(groups[0])
+                group2.extend(groups[1])
+
+        return [group1,group2]
+
+    def getBipartiteGroups(self,start):
+        q = queue.Queue()
+        odds =  []
+        evens = []
+        start.setLevel(0)
+        start.setState('visiting')
+        q.put(start)
+        while not q.empty():
+            curr = q.get()
+            if curr.getLevel() % 2 == 0:
+                evens.append(curr)
+            else:
+                odds.append(curr)
+
+            for node in curr.getNeighbors():
+                if node.getState() == 'unvisited':
+                    node.setLevel(curr.getLevel() + 1)
+                    q.put(node)
+                    node.setState('visiting')
+                elif node.getLevel() == curr.getLevel():
+                    #same level so odd cycle found
+                    return None
+
+            curr.setState('visited')
+
+        return [odds, evens]

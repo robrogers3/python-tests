@@ -1,4 +1,4 @@
-from structures import Utils, Heap
+from . import Utils, Heap
 import sys
 
 class MaxHeap(Heap):

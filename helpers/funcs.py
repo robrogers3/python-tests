@@ -4,6 +4,7 @@ import heapq
 import arraystuff
 import math
 import queue
+import operator
 from collections import defaultdict
 import collections
 
@@ -281,54 +282,126 @@ def rotate_90(a):
         layer += 1
 
     return a
+def add_two_big_nums_as_string(string1, string2):
+    dec1 = "0"
+    dec2 = "0"
+    if string1.find('.') != -1:
+        dec1 = string1[string1.find('.') +1:]
+        string1 = string1[:string1.find('.')
+]
+    if string2.find('.') != -1:
+        dec2 = string2[string2.find('.')+1:]
+        string2 = string2[:string2.find('.')]
 
-def add_two_big_nums(a, b):
+    nums1 = list(map(int, list(string1)))
+    nums2 = list(map(int, list(string2)))
+    maxLen = len(dec1) if len(dec1) > len(dec2) else len(dec2)
+    dec1 = int(dec1.ljust(maxLen, '0'))
+    dec2 = int(dec2.ljust(maxLen, '0'))
+    summ = add_two_big_nums(nums1, nums2)
+    print(dec1, dec2)
+    dec = dec1+dec2
+    if not dec:
+        summ = ''.join(list(map(str, summ)))
+        return summ
+
+    dec = list(map(int, list(str(dec))))
+    summ += [0] * maxLen
+    total = add_two_big_nums(summ, dec)
+    total = ''.join(list(map(str,total[:-maxLen]))) + '.' + ''.join(list(map(str, total[-maxLen:])))
+    return total
+
+
+
+def add_two_big_nums(a,b):
+    larger = a if len(a) >= len(b) else b
+
+    smaller = b if a == larger else a
+
+    if len(smaller) == 0:
+        return larger
+
+    smaller = [0] * (len(larger) - len(smaller)) + smaller
+    result = []
+    smaller.reverse()
+    larger.reverse()
+    carry = 0
+
+    for i in range(len(smaller)):
+        carry,summ = divmod(larger[i] + smaller[i] + carry,10)
+        result.append(summ)
+
+    for j in range(len(smaller),len(larger)):
+        carry,summ = divmod(larger[j] + carry,10)
+        result.append(summ)
+
+    if carry:
+        result.append(carry)
+
+    return result[::-1]
+
+def add_two_big_nums_fo(a, b):
     larger = a if len(a) >= len(b) else b
     smaller = b if a == larger else a
-    #larger.reverse()
-    #smaller.reverse()
-    if len(smaller) < len(larger):
-        smaller = [0] + smaller
-
-
-    result = [0] * len(larger) + [0]
-
+    if len(smaller) == 0:
+        return larger
+    smaller = [0] * (len(larger) - len(smaller)) + smaller
+    result = [0] * (len(larger) +1)
     carry = 0
     i = len(larger) - 1
     while i >= 0:
-        summ = larger[i] + smaller[i] + carry
-        carry = summ // 10
-        result[i + 1] =  summ % 10
+        # summ = larger[i] + smaller[i] + carry
+        # carry = summ // 10
+        # result[i + 1] =  summ % 10
+        #print(smaller[i],i)
+        carry, result[i+ 1] = divmod(larger[i] + smaller[i] + carry,10)
         i -= 1
-
 
     result[0] = carry
 
     if result[0] == 0:
         return result[1::]
-
     return result
-
-def mul_two_big_nums(a, b):
+def mul_two_big_nums(a,b):
+    if not len(a) or not len(b):
+        return 0
+    zeros = 0
+    result =  []
+    i = len(a) -1
+    while i >= 0:
+        prod = [0] * (1 + len(b) + zeros)
+        carry = 0
+        j = len(b) - 1
+        while j >= 0:
+            carry, prod[j+1] = divmod(a[i] * b[j] + carry, 10)
+            j -= 1
+        prod[0] = carry
+        result = add_two_big_nums(prod,result)
+        zeros += 1
+        i -= 1
+    if result[0] == 0:
+        return result[1::]
+    return result
+def mul_two_big_numsK(a, b):
     if a is None or b is None:
         return 0
-
     zeros = 0
-    result = None
+    result = []
     i = len(a) - 1
     while i >= 0:
         prod = [0] * (1 + len(b) + zeros)
         carry = 0
-
         j = len(b) - 1
         while j >= 0:
-            p = a[i] * b[j] + carry
-            carry = p // 10
-            prod[j+1] = p % 10
+            #p = a[i] * b[j] + carry
+            #carry = p // 10
+            #prod[j+1] = p % 10
+            carry, prod[j+1] = divmod(a[i] * b[j] + carry, 10)
             j -= 1
 
         prod[0] = carry
-        result = prod if result is None else add_two_big_nums(result,prod)
+        #result = prod if result is None else add_two_big_nums(result,prod)
+        result = add_two_big_nums(prod,result)
 
         zeros += 1
         i -= 1
@@ -675,6 +748,24 @@ def reverse_bit(num):
 
     return result
 
+def count_bits(num):
+    cnt = 0
+    while num:
+        cnt += 1
+        num = num & (num -1)
+
+    return cnt
+def complement_of_num(num):
+    # shift to 1 mag larger than num (+1), then - 1
+    # 0101 == 5
+    # 0111 wanted
+    # 100 +1 <- mask
+    # 1000 - 1 <-mask
+    # 0111 <- mask now 7
+    mask = (1 << (int(math.log(num, 2)) +1)) - 1
+    #print(bin(mask),bin(num), bin(num ^ mask))
+    return num ^ mask
+
 def primes_sieve(tmax):
     sieve = [True] * (tmax + 1)
     i = 2
@@ -846,15 +937,98 @@ def select_for_target_index(a, start, end, targetIdx, pred):
 
 
 def select_kth_smallest(a, k):
-    pred = lambda x,y: x <= y
+    pred = operator.le
     res =  select_for_target_index(a, 0, len(a) - 1, k -1,pred)
     return a[res]
 
 def select_kth_largest(a,k):
     pred = lambda x,y: x >= y
+    pred = operator.ge
     res = select_for_target_index(a,0,len(a) -1, k-1,pred)
     return a[res]
 
 def swap(a, i,j):
     a[j], a[i] = a[i], a[j]
     return a
+def sliding_window_sum(l, n):
+    q = queue.Queue()
+    sums = []
+    summ = 0
+    for i in range(len(l)):
+        q.put(l[i])
+        summ += l[i]
+        if q.qsize() == n:
+            sums.append(summ)
+            item = q.get()
+            summ -= item
+    return sums
+
+def calculate_the_max_price_of_a_N_day_period(prices,n):
+    def add_price(price):
+        while q.queue and q.queue[0][1] < (price[1] - n):
+            q.get()
+        q.put(price)
+
+    q = queue.Queue()
+    for price in prices:
+        add_price(price)
+
+    max = q.get()
+    while q.queue:
+        item = q.get()
+        if item[0] > max[0]:
+            max = item
+    return max
+
+def zipper(K = 2):
+    def prod(val) :
+        res = 1
+        for ele in val:
+            res *= ele
+        return res
+
+    # initialize list
+    test_list = [[5, 6, 7],
+                 [9, 10, 2],
+                 [10, 3, 4]]
+
+    x = zip(*test_list)
+    print(list(x))
+    return
+    # printing original list
+    print("The original list is : " + str(test_list))
+
+    # Column Product in List of Lists
+    # using loop + zip()
+    res = [prod(idx) for idx in zip(*test_list)][K]
+
+    # printing result
+    print("Product of Kth column is : " + str(res))
+
+def numToWords(num):
+    teens = {10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen",
+             15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen"}
+
+    tens = {2: "twenty", 3: "thirty", 4: "forty", 5: "fifty", 6: "sixty",
+            7: "seventy", 8: "eighty", 9: "ninety"}
+
+    singles = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+    results = []
+    while num > 0:
+        l = len(str(num))
+        d = int(str(num)[0])
+        if num > 99:
+            results.append(singles[d])
+            results.append("hundred")
+        elif num > 19:
+            results.append(tens[d])
+        elif num > 9:
+            results.append(teens[num])
+            break
+        else:
+            results.append(singles[d])
+
+        num %= (d * 10 ** (l-1))
+
+    return ' '.join(results)

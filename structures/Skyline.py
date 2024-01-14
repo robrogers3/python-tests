@@ -96,3 +96,25 @@ class Skyline:
             if res[-1][1] != -live[0][0]:
                 res += [(pos, -live[0][0])]
         return res[1:]
+
+    @staticmethod
+    def pointsToSkyline(points):
+        events =  [(L,-H,R) for L,R,H in points]
+        events += [(R,0,0)  for _,R,_ in points]
+        events.sort()
+        res= [(0,0)]
+        live = [(0, float("inf"))]
+        for pos, negH, R in events:
+            # pos(Left), has moved befond any high points (negH, R)
+            # remove them from top of heap
+            while live[0][1] <= pos:
+                rec = heapq.heappop(live)
+            # start of new building, add it to live
+            if negH:
+                heapq.heappush(live,(negH, R))
+
+            # most recent height != current highest height
+            if res[-1][1] != -live[0][0]:
+                res += [(pos, -live[0][0])]
+
+        return res[1:]
