@@ -297,7 +297,8 @@ class TestArrayStuff(unittest.TestCase):
         a = [1,2,3,4,4,1,2,3]
         i = 2
         e = [1,2,2,1,3,3,4,4]
-        self.assertEqual(arraystuff.dnf(a,i), e)
+        r = arraystuff.dnf(a,i)
+        self.assertEqual(r, e)
 
 if __name__ == '__main__':
     unittest.main()

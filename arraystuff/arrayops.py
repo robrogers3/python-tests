@@ -3,7 +3,7 @@ import heapq
 import operator
 import random
 from itertools import chain
-from queues import QueueWithMax
+from queues.QueueWithMax import QueueWithMax
 from heaps import MaxHeap, MinHeap
 
 def calculate_max_of_sliding_windows(l, n):
@@ -94,9 +94,10 @@ def sort_squares_list(a):
 def sub_array_equal_to_sum(l, t):
     if len(l) == 0:
         return []
-    sum = l[0];
+    sum = l[0]
     s = 0
     e = 0
+    a = []
     while(s <= len(l)):
         if (s > e):
             e = s
